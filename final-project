@@ -1,4 +1,8 @@
 #coding:gbk
+"""
+作者：电信4班赵熙
+实现对小说人物的计数以及关系计数
+"""
 import codecs
 import jieba.posseg as pseg
 import jieba
@@ -21,12 +25,6 @@ with codecs.open("黎明破晓的街道.txt", 'r') as f:
                 relationships[w.word] = {}
             names[w.word] += 1
 
-            # 输出人物出现次数统计结果
-# for name, times in names.items():
-#    print(name, times)
-
-# 对于 lineNames 中每一行，我们为该行中出现的所有人物两两相连。如果两个人物之间尚未有边建立，则将新建的边权值设为 1，
-# 否则将已存在的边的权值加 1。这种方法将产生很多的冗余边，这些冗余边将在最后处理。
 for line in lineNames:
     for name1 in line:
         for name2 in line:
@@ -45,7 +43,7 @@ with codecs.open("People_node.txt", "w", "utf8") as f:
     f.write("ID Label Weight\r\n")
     for name, times in names.items():
         if times > 5 and name in g:
-            f.write(name + " " + name + " " + str(times) + "\r\n")
+            f.write(name + " " + name + " " + str(times) + "\r\n")#输出人物表，同时依照字典将多余的词删去
 
 
 
@@ -54,14 +52,14 @@ with codecs.open("People_edge.txt", "w", "utf8") as f:
     for name, edges in relationships.items():
         for v, w in edges.items():
             if w > 5:
-                f.write(name + " " + v + " " + str(w) + "\r\n")
+                f.write(name + " " + v + " " + str(w) + "\r\n")#输出关系表
 
 
 f=open('People_edge.txt','r',encoding='utf-8')
 f1=open('names.txt','r',encoding='utf-8')
 f2=f1.read()
 lines=f.readlines()
-#删去多余的不在字典中的词
+
 A=[]
 for line in lines:
     A.append([])
@@ -69,15 +67,16 @@ for line in lines:
     for x in m:
         A[-1].append(x)
 f.close()  
-for i in A[:-1]:
+for i in A[:-1]:#删去关系表中不在字典中的词的关系，采用从后遍历删防止遗漏
     if i[0] not in f2 or i[1] not in f2:
         print(i)
         A.remove(i)
 f1.close()
 A.pop()
 f=open('People_edge.txt','w',encoding='utf-8')
-for i in A:
+for i in A:  #写入关系表
 	for j in i:
 		f.write(j+"\0")
 	f.write("\n")
 f.close
+
